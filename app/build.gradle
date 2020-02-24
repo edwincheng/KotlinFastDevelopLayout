@@ -5,20 +5,43 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
     defaultConfig {
-        applicationId "com.github.edwincheng.kotlinfastdeveloplayout"
-        minSdkVersion 19
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        applicationId rootProject.ext.android.packageName
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.android.versionCode
+        versionName rootProject.ext.android.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    // 自定义输出配置
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            def createTime = new Date().format("YYYYMMdd", TimeZone.getTimeZone("GMT+08:00"))
+            outputFileName = "MeetingInfoSystem${variant.versionName}_${variant.name}" + "_" + createTime + ".apk"
+        }
+    }
+
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+
+    android.dexOptions {
+        jumboMode = true
+    }
+
+    lintOptions {
+        abortOnError false
     }
 }
 
@@ -30,4 +53,14 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    // Libs Relation(资源库联系)
+    implementation rootProject.ext.supportLibs
+    implementation rootProject.ext.networkLibs
+    implementation rootProject.ext.othersLibs
+    implementation rootProject.ext.baseAdapter
+    implementation rootProject.ext.glideLibs
+    implementation rootProject.ext.marqueeviewLibs
+
+    annotationProcessor rootProject.ext.butterknifeCompiler
 }
